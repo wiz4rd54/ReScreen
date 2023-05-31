@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Category</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet">
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: 'Source Code Pro', monospace;
+            color: #145070;
+        }
+        body{
+            width:100%;
+            height:100vh;
+        }
+        
+        .mynav{
+            position: fixed;
+            bottom:3%;
+            left:35%;
+            height: 50px;
+            width:30%;
+            background-color: #FFFFFF;
+            border-radius: 15px;
+            border: 1px solid #145070;
+            z-index: 1000;
+            box-shadow: 5px 5px 4px 0px #14507080;
+        }
+        .mynav div {
+            padding: 10px 0px;
+        }
+        .mynav li {
+            margin: 0px 15px;
+            font-size: 18px;
+            border-radius:10px
+        }
+        .mynav a{
+            color:#145070;
+            border-radius: 10px;
+        }
+        .nav-pills > li > a.active {
+            background-color: #145070 !important;
+        }
+        .categories {
+            background-color: #C7E1E0;
+        }
+        .categories .btn {
+            background-color: #145070;
+            color:#FFFFFF;
+        }
+        .categories .btn:hover {
+            box-shadow: 4px 4px 4px rgba(20, 80, 112, 0.4);
+        }
+        .container {
+            height: 200px;
+            position: relative;
+        }
+
+        .cancel{
+            color: #145070;
+            background-color:#FFFFFF;
+        }
+        .cancel:hover{
+            color: #145070;
+            background-color:#FFFFFF;
+        }
+
+        .submit{
+            color: #145070;
+            background-color:#FFFFFF;
+        }
+        .submit:hover{
+            color: #145070;
+            background-color:#FFFFFF;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar px-5 d-flex align-items-center justify-content-between">
+                <a href='/dashboard/{{ user_data[0] }}'class="navbar-brand">ReScreen</a>
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <span class="navbar-text">Hello, <a href='/userprofile/{{ user_data[0] }}' style="text-decoration:none;color: #145070;">{{ user_data[1] }} <i class="bi bi-person-circle" style="font-size:20px;"></i></a></i></span>
+                        <a href="/logout"><i class="bi bi-box-arrow-right" style="font-size:20px"></i></a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <main class="mt-3 mb-3" >
+        <div class="container text-center categories py-4" style="height: 100%;width:100%">
+            <h2>{{ category_data[1] }}</h2>
+            <div class="container-fluid" style="text-align:left">
+                <h4>Job Requirements</h4>
+                {% if category_data[2] %}
+                <p><span><b>Skills</b>: {{ category_data[2] }}</span><br>
+                <span><b>Education</b>: {{ category_data[3] }}</span><br>
+                <span><b>Work Experience</b>: {{ category_data[5] }}-{{ category_data[6] }} years</span></p>
+                {% else %}
+                <p> Add Job Description </p>
+                {% endif %}
+            </div>
+
+            
+            <div class ="container-fluid">
+               <button class="btn me-3" data-inline="true" onclick="UploadResumes()">Upload CV</button>
+               <button class="btn me-3" data-inline="true" data-theme="b" onclick="JobDescription()">Requirements</button>
+               <a href='/deletecategory/{{ user_data[0] }}/{{ category_data[0] }}'class="btn me-3" style="background-color:red"><i class="bi bi-trash" style="color:white"></i></a>
+            </div>
+            <div class="container-fluid mt-3" style="background-color: #FFFFFF;">
+                <table class="table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Phone Number</th>
+                        <th scope="col">Email-id</th>
+                        <th scope="col">links</th>
+                        <th scope="col">Score</th>
+                        <th scope="col">resume</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% if applicants_data|length < 1 %}
+                            No applicants
+                        {% else %}
+                            {% for applicant in applicants_data %}
+                            <tr>
+                                <td>{{ applicant[1] }}</td>
+                                <td>{{ applicant[2] }}</td>
+                                <td>{{ applicant[3] }}</td>
+                                <td>{{ applicant[4] }}</td>
+                                <td>{{ applicant[8] }}</td>
+                                <td><a href="/open_file/{{ applicant[0] }}" target="_blank">View Resume</a></td>
+                            </tr>
+                            {% endfor %}
+                        {% endif %}
+                    </tbody>
+                    </table>
+            </div>    
+        </div>        
+    </main>
+
+    <div id="uploadResumes" class="px-5 py-5" style="display:none;position:absolute;top:25%;left:25%;height:50%;width:50%;background: #145070;">
+        <div class="d-flex flex-column justify-content-center align-items-center">
+            <form action="/uploadresume/{{ user_data[0] }}/{{ category_data[0] }}" method=post enctype=multipart/form-data class="d-flex flex-column justify-content-center align-items-center">
+                <input style="color:white" type=file name=file multiple>
+                <input class="mt-3 submit btn" type=submit value=Upload>
+            </form>
+            <div class="d-flex mt-3 flex-column justify-content-center align-items-center">
+                <button class="cancel btn" onclick="UploadResumesHide()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="jobDescription" class="px-5 py-5" style="display:none;position:absolute;top:17%;left:15%;height:auto;width:70%;background: #145070; color:white">
+        <div class="d-flex flex-column justify-content-center align-items-center">
+            <h2 style="color:white"> Job Requirements</h2>
+            {% if category_data[2] %}
+            <form action='/updatedescription/{{ user_data[0] }}/{{ category_data[0] }}' method="POST" style="height:auto;width:100%;color:white" class="d-flex flex-column justify-content-center align-items-center">
+                <div class="form-floating mb-3 w-75">
+                    <input type="text" name="education" class="form-control" id="floatingInput" placeholder="Education" value='{{ category_data[3] }}'>
+                    <label for="floatingInput">Education Background</label>
+                </div>
+                <div class="form-floating mb-3 w-75">
+                    <input type="text" name="skills" class="form-control" id="floatingInput" placeholder="Skills and Technologies" value='{{ category_data[2] }}'>
+                    <label for="floatingInput">Skills and Technologies (separate with space)</label>
+                </div>
+                <div class="form-floating mb-3 w-75">
+                    <input type="text" name="experience_minimum" class="form-control" id="floatingInput" placeholder="Work Experience (Minimum)" value='{{ category_data[5] }}'>
+                    <label for="floatingInput">Work Experience (Minimum)</label>
+                </div>
+                <div class="form-floating mb-3 w-75">
+                    <input type="text" name="experience_maximum" class="form-control" id="floatingInput" placeholder="Work Experience (Maximum)" value='{{ category_data[6] }}'>
+                    <label for="floatingInput">Work Experience (Maximum)</label>
+                </div>
+                <button class="submit btn" data-inline="true">Submit</button>
+            </form>
+            {% else %}
+            <form action='/updatedescription/{{ user_data[0] }}/{{ category_data[0] }}' method="POST" style="height:auto;width:100%;color:white" class="d-flex flex-column justify-content-center align-items-center">
+                <div class="form-floating mb-3 w-75">
+                    <input type="text" name="education" class="form-control" id="floatingInput" placeholder="Education">
+                    <label for="floatingInput">Education Background</label>
+                </div>
+                <div class="form-floating mb-3 w-75">
+                    <input type="text" name="skills" class="form-control" id="floatingInput" placeholder="Skills and Technologies">
+                    <label for="floatingInput">Skills and Technologies (separate with space)</label>
+                </div>
+                <div class="form-floating mb-3 w-75">
+                    <input type="text" name="experience_minimum" class="form-control" id="floatingInput" placeholder="Work Experience (Minimum)">
+                    <label for="floatingInput">Work Experience (Minimum)</label>
+                </div>
+                <div class="form-floating mb-3 w-75">
+                    <input type="text" name="experience_maximum" class="form-control" id="floatingInput" placeholder="Work Experience (Maximum)">
+                    <label for="floatingInput">Work Experience (Maximum)</label>
+                </div>
+                <button class="submit btn" data-inline="true">Submit</button>
+            </form>
+            {% endif %}
+            <div class="d-flex mt-3 flex-column justify-content-center align-items-center">
+                <button class="cancel btn" onclick="JobDescriptionHide()">Cancel</button>
+            </div>
+        </div>
+    </div>
+   
+    <script>
+        function UploadResumes() {
+            var x = document.getElementById("uploadResumes")
+            if (x.style.display === "none"){
+                x.style.display = "block"
+            }
+        };
+        function UploadResumesHide() {
+            var x = document.getElementById("uploadResumes")
+            if (x.style.display === "block"){
+                x.style.display = "none"
+            }
+        };
+        function JobDescription() {
+            var x = document.getElementById("jobDescription")
+            if (x.style.display === "none"){
+                x.style.display = "block"
+            }
+        };
+        function JobDescriptionHide() {
+            var x = document.getElementById("jobDescription")
+            if (x.style.display === "block"){
+                x.style.display = "none"
+            }
+        }
+    </script>
+</body>
+</html>
